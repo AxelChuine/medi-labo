@@ -1,0 +1,82 @@
+package com.openclassrooms.medilabo.services;
+
+import com.openclassrooms.medilabo.domain.Patient;
+import com.openclassrooms.medilabo.dto.PatientDto;
+import com.openclassrooms.medilabo.enums.GenderEnum;
+import com.openclassrooms.medilabo.repository.IPatientRepository;
+import com.openclassrooms.medilabo.service.PatientService;
+import com.openclassrooms.medilabo.service.mapper.PatientMapper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@ExtendWith(MockitoExtension.class)
+public class PatientServiceTest {
+    @InjectMocks
+    private PatientService service;
+
+    @Mock
+    private IPatientRepository repository;
+
+    @Mock
+    private PatientMapper mapper;
+
+    private final Long id = 1L;
+    private final String firstName = "John";
+    private final String lastName = "Doe";
+    private final LocalDate birthDate = LocalDate.now();
+    private final GenderEnum gender = GenderEnum.M;
+    private final String address = "12 rue de LaBenne";
+    private final String cellPhone = "01";
+    private Patient patient;
+    private PatientDto patientDto;
+    private Set<PatientDto> setDto;
+    private List<Patient> list;
+
+    @BeforeEach
+    public void setUp() {
+        patient = new Patient();
+        patient.setId(id);
+        patient.setFirstName(firstName);
+        patient.setLastName(lastName);
+        patient.setBirthDate(birthDate);
+        patient.setAddress(address);
+        patient.setGender(gender);
+        patient.setCellNumber(cellPhone);
+
+        patientDto = new PatientDto();
+        patientDto.setId(id);
+        patientDto.setFirstName(firstName);
+        patientDto.setLastName(lastName);
+        patientDto.setBirthDate(birthDate);
+        patientDto.setAddress(address);
+        patientDto.setGender(gender);
+        patientDto.setCellNumber(cellPhone);
+        setDto = new HashSet<PatientDto>();
+        list = new ArrayList<>();
+        this.setDto.add(patientDto);
+        this.list.add(patient);
+    }
+
+    @Test
+    public void findAllShouldReturnAllPatients() {
+        Mockito.when(repository.findAll()).thenReturn(list);
+        Mockito.when(this.mapper.toDtoSet(new HashSet<>(list))).thenReturn(setDto);
+        Set<PatientDto> result = service.findAll();
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(setDto, result);
+    }
+
+}
