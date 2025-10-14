@@ -4,9 +4,7 @@ import com.openclassrooms.medilabo.domain.Patient;
 import com.openclassrooms.medilabo.dto.PatientDto;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PatientMapper {
@@ -34,7 +32,7 @@ public class PatientMapper {
         return dto;
     }
 
-    public Set<PatientDto> toDtoSet(Set<Patient> model) {
+    public Set<PatientDto> toDtoSet(List<Patient> model) {
         Set<PatientDto> set = new HashSet<>();
         for (Patient patient : model) {
             set.add(toDto(patient));
@@ -54,5 +52,13 @@ public class PatientMapper {
         Patient model = new Patient();
         model.setId(Objects.isNull(dto.getId()) ? null : dto.getId());
         return model;
+    }
+
+    public List<PatientDto> toDtoList(List<Patient> models) {
+        List<PatientDto> list = new ArrayList<>();
+        for (Patient m : models) {
+            list.add(toDto(m));
+        }
+        return list;
     }
 }

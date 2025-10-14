@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ExtendWith(MockitoExtension.class)
 public class PatientServiceTest {
     @InjectMocks
@@ -43,6 +45,7 @@ public class PatientServiceTest {
     private PatientDto patientDto;
     private Set<PatientDto> setDto;
     private List<Patient> list;
+    private List<PatientDto> dtoList;
 
     @BeforeEach
     public void setUp() {
@@ -67,16 +70,35 @@ public class PatientServiceTest {
         list = new ArrayList<>();
         this.setDto.add(patientDto);
         this.list.add(patient);
+        this.dtoList = new ArrayList<>();
+        this.dtoList.add(patientDto);
     }
 
     @Test
     public void findAllShouldReturnAllPatients() {
         Mockito.when(repository.findAll()).thenReturn(list);
-        Mockito.when(this.mapper.toDtoSet(new HashSet<>(list))).thenReturn(setDto);
+        Mockito.when(this.mapper.toDtoSet(list)).thenReturn(setDto);
         Set<PatientDto> result = service.findAll();
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(setDto, result);
+    }
+
+    @Test
+    public void createShouldReturnPatientDto() {
+        PatientDto dto = new PatientDto();
+        Patient model = new  Patient();
+
+        Mockito.when(this.repository.findAll()).thenReturn(this.list);
+        Mockito.when(this.mapper.toDtoList(this.list)).thenReturn(this.dtoList);
+        Mockito.when(this.mapper.toModel(dto)).thenReturn(model);
+        Mockito.when(this.repository.save(model)).thenReturn(model);
+        Mockito.when(this.mapper.toDto(model)).thenReturn(dto);
+        PatientDto p = this.service.create(dto);
+
+        Assertions.assertNotNull(p);
+        assertThat(p).isEqualTo(dto);
+
     }
 
 }
