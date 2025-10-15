@@ -16,10 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,7 +95,22 @@ public class PatientServiceTest {
 
         Assertions.assertNotNull(p);
         assertThat(p).isEqualTo(dto);
+    }
 
+    @Test
+    public void updateShouldReturnAPatientDto() {
+        PatientDto pDto = new PatientDto();
+        pDto.setId(2L);
+        Patient p = new Patient();
+        p.setId(2L);
+
+        Mockito.when(this.repository.findById(p.getId())).thenReturn(Optional.of(p));
+        Mockito.when(this.mapper.save(Optional.of(p), pDto)).thenReturn(p);
+        Mockito.when(this.mapper.toDto(p)).thenReturn(pDto);
+        PatientDto toReturn = this.service.update(2L, pDto);
+
+        Assertions.assertNotNull(toReturn);
+        assertThat(toReturn).isEqualTo(pDto);
     }
 
 }

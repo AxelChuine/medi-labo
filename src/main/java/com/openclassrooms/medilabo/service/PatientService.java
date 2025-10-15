@@ -1,13 +1,16 @@
 package com.openclassrooms.medilabo.service;
 
+import com.openclassrooms.medilabo.domain.Patient;
 import com.openclassrooms.medilabo.dto.PatientDto;
 import com.openclassrooms.medilabo.exceptions.AlreadyExistsException;
+import com.openclassrooms.medilabo.exceptions.NoPatientFoundException;
 import com.openclassrooms.medilabo.repository.IPatientRepository;
 import com.openclassrooms.medilabo.service.mapper.PatientMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,5 +34,13 @@ public class PatientService {
             throw new AlreadyExistsException("Le patient existe déjà.");
         }
         return this.mapper.toDto(this.repository.save(this.mapper.toModel(dto)));
+    }
+
+    public PatientDto update(Long id, PatientDto dto) {
+        Optional<Patient> optional = this.repository.findById(id);
+        if (optional.isPresent()) {
+            return this.mapper.toDto(this.mapper.save(optional, dto));
+        }
+        throw new NoPatientFoundException("Aucun patient avec cet id n'existe.");
     }
 }

@@ -2,6 +2,7 @@ package com.openclassrooms.medilabo.service.mapper;
 
 import com.openclassrooms.medilabo.domain.Patient;
 import com.openclassrooms.medilabo.dto.PatientDto;
+import com.openclassrooms.medilabo.exceptions.NoPatientFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -48,9 +49,20 @@ public class PatientMapper {
         return set;
     }
 
-    public Patient save(PatientDto dto) {
-        Patient model = new Patient();
-        model.setId(Objects.isNull(dto.getId()) ? null : dto.getId());
+    public Patient save(Optional<Patient> optional, PatientDto dto) {
+        Patient model;
+        if (optional.isPresent()) {
+            model = optional.get();
+        } else {
+            throw new NoPatientFoundException("Aucun patient avec cet id n'existe.");
+        }
+        model.setId(Objects.isNull(dto.getId()) ? model.getId() : dto.getId());
+        model.setFirstName(Objects.isNull(dto.getFirstName()) ? model.getFirstName() : dto.getFirstName());
+        model.setLastName(Objects.isNull(dto.getLastName()) ? model.getLastName() : dto.getLastName());
+        model.setBirthDate(Objects.isNull(dto.getBirthDate()) ? model.getBirthDate() : dto.getBirthDate());
+        model.setGender(Objects.isNull(dto.getGender()) ? model.getGender() : dto.getGender());
+        model.setAddress(Objects.isNull(dto.getAddress()) ? model.getAddress() : dto.getAddress());
+        model.setCellNumber(Objects.isNull(dto.getCellNumber()) ? model.getCellNumber() : dto.getCellNumber());
         return model;
     }
 
@@ -58,6 +70,14 @@ public class PatientMapper {
         List<PatientDto> list = new ArrayList<>();
         for (Patient m : models) {
             list.add(toDto(m));
+        }
+        return list;
+    }
+
+    public List<Patient> toModelList(List<PatientDto> dtoList) {
+        List<Patient> list = new ArrayList<>();
+        for (PatientDto dto : dtoList) {
+            list.add(toModel(dto));
         }
         return list;
     }
